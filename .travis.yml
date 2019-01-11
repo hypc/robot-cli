@@ -1,0 +1,9 @@
+language: python
+python:
+  - "3.5"
+deploy:
+  provider: pypi
+  user: $username
+  password: $password
+  on:
+    tags: true
