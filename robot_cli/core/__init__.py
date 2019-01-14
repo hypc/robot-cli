@@ -24,6 +24,7 @@ def get_commands():
                    pkgutil.iter_modules([command_dir])
                    if not is_pkg and not name.startswith("_")]
     subcommands.append("help")
+    subcommands.append("version")
     subcommands.sort()
     return subcommands
 
