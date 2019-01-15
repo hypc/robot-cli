@@ -14,9 +14,11 @@ class Command(BaseCommand):
                             help="Library folder of the project.")
 
     def handle(self, *args, **options):
-        print(options)
         project_name = options.get("name")
-        library_folder = options.get("library") or project_name
+        if options.get("library") is not None:
+            library_folder = options.get("library")
+        else:
+            library_folder = "%s_library" % project_name
         if os.path.exists(project_name):
             raise CommandError("FileExistsError: %s" % project_name)
 
@@ -28,6 +30,10 @@ class Command(BaseCommand):
                 "=" * len(project_name),
                 project_name,
                 "=" * len(project_name),
+                "",
+                "`Robot Framework`_ is a generic open source test automation framework.",
+                "",
+                ".. _Robot Framework: http://robotframework.org/",
                 "",
             ]
             f.write("\n".join(text))
