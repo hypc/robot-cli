@@ -19,11 +19,15 @@ class Command(BaseCommand):
             library_folder = options.get("library")
         else:
             library_folder = "%s_library" % project_name
+            library_folder = library_folder.replace("-", "_")
+            library_folder = library_folder.replace(".", "_")
         if os.path.exists(project_name):
             raise CommandError("FileExistsError: %s" % project_name)
 
         os.makedirs(project_name)
         os.chdir(project_name)
+        project_name = project_name.replace("-", "_")
+        project_name = project_name.replace(".", "_")
 
         with open("README.rst", "w") as f:
             text = [
@@ -41,27 +45,28 @@ class Command(BaseCommand):
         with open("requirements.txt", "w") as f:
             text = [
                 "robotframework",
-                ""
+                "docutils",
+                "",
             ]
             f.write("\n".join(text))
 
         os.mkdir("tests")
-        with open("tests/resource.robot", "w") as f:
+        with open("tests/resources.robot", "w") as f:
             text = [
                 "=========",
                 "Resources",
                 "=========",
                 "",
-                "*** Variables ***",
-                "No Operation",
-                "",
-                "",
                 "*** Settings ***",
-                "No Operation",
+                "Documentation   This is documentation for this test suite.",
+                "...             This kind of documentation can often be get quite long...",
+                "",
+                "",
+                "*** Variables ***",
+                "${VAR_NAME}     VALUE",
                 "",
                 "",
                 "*** Keywords ***",
-                "No Operation",
                 "",
             ]
             f.write("\n".join(text))
@@ -71,7 +76,9 @@ class Command(BaseCommand):
                 "-" * (len(project_name) + 6),
                 "",
                 "*** Settings ***",
-                "No Operation",
+                "Documentation   This is documentation for this test suite.",
+                "...             This kind of documentation can often be get quite long...",
+                "Resource        resources.robot",
                 "",
                 "",
                 "*** Test Cases ***",
@@ -79,7 +86,6 @@ class Command(BaseCommand):
                 "",
                 "",
                 "*** Keywords ***",
-                "No Operation",
                 "",
             ]
             f.write("\n".join(text))
