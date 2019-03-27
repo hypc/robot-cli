@@ -1,41 +1,41 @@
-import sys
 from argparse import ArgumentParser
 
+import sys
+
 from robot_cli.core import CommandError
+from robot_cli.__version__ import __title__
 
 
 class BaseCommand(object):
-    # Metadata about this command.
-    help = ""
-    args = ""
-    subcommand = ""
-
-    def __init__(self, prog="robot-cli"):
+    def __init__(self, prog=__title__, stdin=sys.stdin, stdout=sys.stdout,
+                 stderr=sys.stderr):
         self.prog = prog
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
 
-    def usage(self):
-        """
-        Return a brief description of how to use this command, by
-        default from the attribute ``self.help``.
-        """
-        usage = "%s %s [options] %s" % (self.prog, self.subcommand, self.args)
-        if self.help:
-            return "%s\n\n%s" % (usage, self.help)
-        else:
-            return usage
+    @property
+    def command(self):
+        return self.__module__.split(".")[-1]
+
+    @property
+    def description(self):
+        return ""
 
     def create_parser(self):
         """
         Create and return the ``ArgumentParser`` which will be used to
         parse the arguments to this command.
         """
-        parser = ArgumentParser(prog=self.prog, usage=self.usage())
+        prog = "%s %s" % (self.prog, self.command)
+        parser = ArgumentParser(prog=prog, description=self.description)
         self.add_arguments(parser)
         return parser
 
     def add_arguments(self, parser):
         """
         Entry point for subclassed commands to add custom arguments.
+        :type parser: argparse.ArgumentParser
         """
         pass
 
@@ -49,14 +49,14 @@ class BaseCommand(object):
     def run_from_argv(self, argv):
         parser = self.create_parser()
 
-        options, args = parser.parse_known_args(argv[2:])
-        cmd_options = vars(options)
+        opts, args = parser.parse_known_args(argv[2:])
+        cmd_opts = vars(opts)
         try:
-            self.execute(*args, **cmd_options)
+            self.execute(*args, **cmd_opts)
         except Exception as e:
             if not isinstance(e, CommandError):
                 raise e
-            sys.stderr.write(e.msg + "\n")
+            self.stderr.write(e.msg + "\n")
             sys.exit(1)
 
     def execute(self, *args, **options):
@@ -65,7 +65,7 @@ class BaseCommand(object):
         """
         output = self.handle(*args, **options)
         if output:
-            sys.stdout.write(output)
+            self.stdout.write(output)
 
     def handle(self, *args, **options):
         """

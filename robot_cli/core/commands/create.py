@@ -39,6 +39,13 @@ class Command(BaseCommand):
                 "",
                 ".. _Robot Framework: http://robotframework.org/",
                 "",
+                "Running",
+                "-------",
+                "",
+                "::",
+                "",
+                "    robot --pythonpath . tests/",
+                "",
             ]
             f.write("\n".join(text))
 
@@ -79,10 +86,12 @@ class Command(BaseCommand):
                 "Documentation   This is documentation for this test suite.",
                 "...             This kind of documentation can often be get quite long...",
                 "Resource        resources.robot",
+                "Library         %s.DemoLibrary" % library_folder,
                 "",
                 "",
                 "*** Test Cases ***",
-                "No Operation",
+                "TestCase",
+                "    No Operation",
                 "",
                 "",
                 "*** Keywords ***",
@@ -95,8 +104,11 @@ class Command(BaseCommand):
             pass
         with open("%s/DemoLibrary.py" % library_folder, "w") as f:
             text = [
-                "class IndicesLibrary(object):",
+                "class DemoLibrary(object):",
                 "    def __init__(self, *args, **kwargs):",
+                "        pass",
+                "",
+                "    def demo(self, *args, **kwargs):",
                 "        pass",
                 "",
             ]
